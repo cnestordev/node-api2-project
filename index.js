@@ -14,7 +14,7 @@ app.post('/api/posts', (req, res) => {
         db.insert(req.body)
             .then(response => {
                 //return newly created post.  response returns object with id property
-                res.status(201).json(response)
+                res.status(201).json(req.body)
             })
             .catch(err => {
                 res.status(500).json({ error: 'There was an error while saving your post' })
@@ -32,13 +32,48 @@ app.post('/api/posts/:id/comments', (req, res) => {
                 if (response.length === 0) {
                     res.status(404).json({ message: 'The post with the specified ID does not exist' })
                 } else {
-                    console.log(req.body)
+                    const newComment = {
+                        text: req.body.text,
+                        post_id: id
+                    }
+                    db.insertComment(newComment)
+                        .then(resp => {
+                            res.status(201).json(newComment)
+                        })
+                        .catch(error => {
+                            res.status(500).json({ error: 'There was an error while saving the comment to the database' })
+                        })
                 }
             })
             .catch(err => {
                 console.log(err)
             })
     }
+})
+
+app.get('/api/posts', (req, res) => {
+    db.find()
+        .then(response => {
+            res.status(200).json({ data: response })
+        })
+        .catch(error => {
+            res.status(500).json({ error: 'The post information could not be retrieved' })
+        })
+})
+
+app.get('/api/posts/:id', (req, res) => {
+    const id = req.params.id
+    db.findById(id)
+        .then(response => {
+            if (response.length === 0) {
+                res.status(404).json({ message: 'The post with the specified ID does not exist' })
+            } else {
+                res.status(200).json(response)
+            }
+        })
+        .catch(error => {
+            res.status(500).json({ error: 'The post information could not be retrieved' })
+        })
 })
 
 
