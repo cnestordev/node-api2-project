@@ -9,7 +9,7 @@ const db = require('./data/db')
 
 app.post('/api/posts', (req, res) => {
     if (req.body.title === '' || req.body.contents === '') {
-        res.status(400).json({ errorMessage: 'Pleave provide ttile and contents for the post' })
+        res.status(400).json({ errorMessage: 'Pleave provide title and contents for the post' })
     } else {
         db.insert(req.body)
             .then(response => {
@@ -93,11 +93,21 @@ app.get('/api/posts/:id/comments', (req, res) => {
 
 app.delete('/api/posts/:id', (req, res) => {
     const id = req.params.id
-    db.remove(id)
-        .then(response => {
-            res.status(204).end()
+    db.findById(id)
+        .then(resp => {
+            if (resp.length === 0) {
+                res.status(404).json({ message: 'The post by the specified ID does not exist' })
+            } else {
+                db.remove(id)
+                    .then(response => {
+                        res.status(204).end()
+                    })
+                    .catch(error => {
+                        res.status(500).json({ error: 'The post could not be removed' })
+                    })
+            }
         })
-        .catch(error => {
+        .catch(err => {
             res.status(500).json({ error: 'The post could not be removed' })
         })
 })
