@@ -161,7 +161,7 @@ router.put('/:id', (req, res) => {
 module.exports = router
 
 
-//1. The /api/posts/17/comments endpoints returns 404, even with ID being in DB.  Number() does not change outcome.
+//1. (SOLVED) The /api/posts/17/comments endpoints returns 404, even with ID being in DB.  Number() does not change outcome. (SOLVED)
 
 //2. /:id/comments -- cannot use both error 404 and 500 because the promise only resolves if it finds a matching ID.  If it cannot find a matching ID,
 //it will run the catch method, which is the 500.  Cannot include 404 on the .catch() because of this.
