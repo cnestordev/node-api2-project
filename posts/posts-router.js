@@ -22,54 +22,56 @@ router.post('/', (req, res) => {
 
 //the promise only resolves if post_id matches to an id.  If not, it calls .catch().  Therefore, cannot use both error 500 and error 404.
 //otherwise, it is functional
-router.post('/:id/comments', (req, res) => {
-    const id = Number(req.params.id)
-    if (req.body.text === '') {
-        res.status(400).json({ errorMessage: 'Please provide text for the comment' })
-    } else {
-        const newComment = {
-            text: req.body.text,
-            post_id: id
-        }
-        db.insertComment(newComment)
-            .then(response => {
-                //response is an object with one property - an id with a new ID number (useless)
-                res.status(201).json(newComment)
-            })
-            .catch(error => {
-                res.status(500).json({ error: 'There was an error while saving the comment to the database' })
-            })
-    }
-})
-
 // router.post('/:id/comments', (req, res) => {
-//     const id = req.params.id
+//     const id = Number(req.params.id)
 //     if (req.body.text === '') {
 //         res.status(400).json({ errorMessage: 'Please provide text for the comment' })
 //     } else {
-//         db.findById(id)
+//         const newComment = {
+//             text: req.body.text,
+//             post_id: id
+//         }
+//         db.insertComment(newComment)
 //             .then(response => {
-//                 if (response.length === 0) {
-//                     res.status(404).json({ message: 'The post with the specified ID does not exist' })
-//                 } else {
-//                     const newComment = {
-//                         text: req.body.text,
-//                         post_id: id
-//                     }
-//                     db.insertComment(newComment)
-//                         .then(resp => {
-//                             res.status(201).json(newComment)
-//                         })
-//                         .catch(error => {
-//                             res.status(500).json({ error: 'There was an error while saving the comment to the database' })
-//                         })
-//                 }
+//                 //response is an object with one property - an id with a new ID number (useless)
+//                 res.status(201).json(newComment)
 //             })
-//             .catch(err => {
-//                 console.log(err)
+//             .catch(error => {
+//                 res.status(500).json({ error: 'There was an error while saving the comment to the database' })
 //             })
 //     }
 // })
+
+// route fully functional but too much unneccesary code
+router.post('/:id/comments', (req, res) => {
+    const id = req.params.id
+    if (req.body.text === '') {
+        res.status(400).json({ errorMessage: 'Please provide text for the comment' })
+    } else {
+        db.findById(id)
+            .then(response => {
+                if (response.length === 0) {
+                    res.status(404).json({ message: 'The post with the specified ID does not exist' })
+                } else {
+                    const newComment = {
+                        text: req.body.text,
+                        post_id: id
+                    }
+                    db.insertComment(newComment)
+                        .then(resp => {
+                            res.status(201).json(newComment)
+                        })
+                        .catch(error => {
+                            console.log(error)
+                            res.status(500).json({ error: 'There was an error while saving the comment to the database' })
+                        })
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+})
 
 //route fully functional
 router.get('/', (req, res) => {
